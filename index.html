@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOISE SPACE · Bolão CBLOL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Rajdhani', sans-serif; background: #080808; color: #e0e0e0; min-height: 100vh; }
+    .ns-root { max-width: 800px; margin: 0 auto; padding-bottom: 3rem; }
+
+    .ns-header { background: #0a0a0a; padding: 2rem 1.5rem 1.25rem; text-align: center; border-bottom: 2px solid #1aff6e; position: relative; overflow: hidden; }
+    .ns-header::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(26,255,110,0.03) 40px, rgba(26,255,110,0.03) 41px); }
+    .ns-logo-row { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 0.25rem; position: relative; }
+    .ns-org-badge { font-size: 32px; line-height: 1; }
+    .ns-title { font-family: 'Orbitron', monospace; font-size: 2.2rem; font-weight: 900; color: #1aff6e; letter-spacing: 0.12em; text-shadow: 0 0 24px rgba(26,255,110,0.35); position: relative; }
+    .ns-subtitle { font-size: 13px; color: #666; letter-spacing: 0.22em; text-transform: uppercase; margin-top: 0.3rem; position: relative; }
+
+    .ns-user-bar { background: #0d0d0d; border-bottom: 0.5px solid #1e1e1e; padding: 7px 1.5rem; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #555; }
+    .ns-user-bar .uname { color: #1aff6e; font-weight: 600; }
+    .ns-user-bar .ubtn { background: none; border: none; color: #444; font-size: 11px; font-family: 'Orbitron', monospace; cursor: pointer; padding: 2px 6px; letter-spacing: 0.1em; }
+    .ns-user-bar .ubtn:hover { color: #ff4444; background: none; }
+
+    .ns-rules { background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 1.5rem; display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
+    .ns-rule { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #aaa; }
+    .ns-badge { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+    .ns-badge-2 { background: #1aff6e22; color: #1aff6e; border: 1px solid #1aff6e55; }
+    .ns-badge-1 { background: #ffa50022; color: #ffa500; border: 1px solid #ffa50055; }
+
+    .ns-section-title { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; color: #444; letter-spacing: 0.28em; text-transform: uppercase; padding: 1rem 1.5rem 0.5rem; }
+
+    /* LOGIN */
+    .ns-login-card { margin: 2rem 1.5rem; background: #0d0d0d; border: 0.5px solid #1aff6e33; border-radius: 12px; padding: 2.5rem 2rem; text-align: center; }
+    .ns-login-title { font-family: 'Orbitron', monospace; font-size: 15px; color: #1aff6e; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
+    .ns-login-sub { font-size: 13px; color: #555; margin-bottom: 1.5rem; }
+    .ns-login-row { display: flex; gap: 8px; max-width: 340px; margin: 0 auto; }
+
+    /* SCOREBOARD */
+    .ns-scoreboard { margin: 0 1.5rem; border-radius: 10px; border: 0.5px solid #1e1e1e; overflow: hidden; }
+    .ns-sb-header { background: #111; display: grid; grid-template-columns: 36px 1fr 64px 64px 64px; padding: 8px 14px; border-bottom: 0.5px solid #222; }
+    .ns-sb-th { font-family: 'Orbitron', monospace; font-size: 10px; color: #444; letter-spacing: 0.15em; text-transform: uppercase; }
+    .ns-sb-th.center { text-align: center; }
+    .ns-sb-row { display: grid; grid-template-columns: 36px 1fr 64px 64px 64px; padding: 11px 14px; border-bottom: 0.5px solid #111; align-items: center; background: #0d0d0d; transition: background 0.15s; }
+    .ns-sb-row:last-child { border-bottom: none; }
+    .ns-sb-row:hover { background: #141414; }
+    .ns-sb-row.me { background: #1aff6e08; border-left: 2px solid #1aff6e55; }
+    .ns-rank { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; color: #333; text-align: center; }
+    .ns-rank.gold { color: #ffd700; }
+    .ns-rank.silver { color: #c0c0c0; }
+    .ns-rank.bronze { color: #cd7f32; }
+    .ns-player-name { font-size: 15px; font-weight: 600; color: #e0e0e0; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
+    .ns-you-tag { font-family: 'Orbitron', monospace; font-size: 8px; padding: 1px 5px; border-radius: 3px; background: #1aff6e22; color: #1aff6e; border: 1px solid #1aff6e33; }
+    .ns-pts { text-align: center; font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; color: #1aff6e; }
+    .ns-pts-sub { text-align: center; font-family: 'Orbitron', monospace; font-size: 11px; color: #444; }
+
+    /* GUESS PANEL */
+    .ns-guess-panel { margin: 0 1.5rem 8px; background: #0d0d0d; border: 0.5px solid #1aff6e33; border-radius: 10px; overflow: hidden; }
+    .ns-guess-panel-header { background: #0f1a12; padding: 0.7rem 1rem; border-bottom: 0.5px solid #1aff6e22; display: flex; justify-content: space-between; align-items: center; }
+    .ns-guess-panel-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #1aff6e; letter-spacing: 0.15em; }
+    .ns-guess-panel-body { padding: 0.75rem 1rem; }
+    .ns-match-guess-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 0.5px solid #111; flex-wrap: wrap; }
+    .ns-match-guess-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .ns-match-guess-info { font-size: 14px; font-weight: 600; color: #e0e0e0; }
+    .ns-match-guess-fmt { font-family: 'Orbitron', monospace; font-size: 9px; color: #555; margin-top: 2px; }
+    .ns-guess-inputs { display: flex; gap: 5px; align-items: flex-end; flex-wrap: wrap; }
+    .ns-game-col { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .ns-game-col-label { font-size: 9px; color: #555; font-family: 'Orbitron', monospace; }
+    .btn-save { padding: 11px 24px !important; font-size: 13px !important; width: 100%; margin-top: 2px; }
+
+    /* MATCHES */
+    .ns-matches { margin: 0 1.5rem; }
+    .ns-match-card { background: #0d0d0d; border: 0.5px solid #1e1e1e; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+    .ns-match-header { background: #111; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid #1a1a1a; }
+    .ns-match-label { font-size: 12px; color: #555; letter-spacing: 0.1em; }
+    .ns-match-format { font-family: 'Orbitron', monospace; font-size: 10px; padding: 2px 7px; border-radius: 3px; background: #ffffff10; color: #888; border: 1px solid #333; }
+    .ns-match-status { font-family: 'Orbitron', monospace; font-size: 10px; padding: 2px 8px; border-radius: 3px; }
+    .ns-match-status.pending { background: #ffa50015; color: #ffa500; border: 1px solid #ffa50033; }
+    .ns-match-status.done { background: #1aff6e15; color: #1aff6e; border: 1px solid #1aff6e33; }
+    .ns-match-body { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .ns-match-team { flex: 1; font-size: 17px; font-weight: 600; letter-spacing: 0.05em; color: #e0e0e0; }
+    .ns-match-team.right { text-align: right; }
+    .ns-match-team.winner { color: #1aff6e; }
+    .ns-match-score { font-family: 'Orbitron', monospace; font-size: 24px; font-weight: 700; display: flex; gap: 8px; align-items: center; }
+    .ns-match-score .sep { color: #333; font-size: 18px; }
+    .ns-score-num { color: #e0e0e0; }
+    .ns-score-num.winner { color: #1aff6e; }
+    .ns-game-dots { display: flex; gap: 5px; justify-content: center; padding: 4px 14px 10px; }
+    .ns-dot { width: 11px; height: 11px; border-radius: 50%; border: 1px solid #333; }
+    .ns-dot.t1 { background: #1aff6e; border-color: #1aff6e88; }
+    .ns-dot.t2 { background: #ff4444; border-color: #ff444488; }
+    .ns-dot.empty { background: #1a1a1a; }
+
+    /* ADMIN */
+    .ns-admin { background: #0d0d0d; border: 0.5px solid #222; border-radius: 10px; margin: 0 1.5rem 1.25rem; overflow: hidden; }
+    .ns-admin-header { background: #111; border-bottom: 0.5px solid #222; padding: 0.7rem 1rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+    .ns-admin-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #ffa500; letter-spacing: 0.15em; }
+    .ns-admin-toggle { font-size: 12px; color: #555; }
+    .ns-admin-body { padding: 1rem; }
+    .ns-admin-body.hidden { display: none; }
+    .ns-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .ns-form-label { font-size: 11px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+    .ns-divider { border: none; border-top: 0.5px solid #1e1e1e; margin: 12px 0; }
+    .ns-flex { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+    .ns-game-grid { display: flex; gap: 6px; align-items: flex-end; flex-wrap: wrap; }
+
+    input, select { background: #1a1a1a; border: 0.5px solid #333; border-radius: 6px; color: #e0e0e0; font-family: 'Rajdhani', sans-serif; font-size: 14px; padding: 7px 10px; outline: none; transition: border-color 0.2s; width: 100%; }
+    input:focus, select:focus { border-color: #1aff6e55; }
+    .ns-select-sm { width: auto !important; padding: 4px 6px; font-size: 12px; }
+
+    button { background: #1aff6e18; border: 1px solid #1aff6e44; border-radius: 6px; color: #1aff6e; font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; padding: 7px 16px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    button:hover { background: #1aff6e30; }
+    .btn-danger { background: #ff3a3a18 !important; border-color: #ff3a3a44 !important; color: #ff3a3a !important; }
+    .btn-danger:hover { background: #ff3a3a30 !important; }
+    .btn-orange { background: #ffa50018 !important; border-color: #ffa50044 !important; color: #ffa500 !important; }
+    .btn-orange:hover { background: #ffa50030 !important; }
+
+    /* PALPITES */
+    .ns-palpites { margin: 0 1.5rem 8px; background: #0d0d0d; border: 0.5px solid #1e1e1e; border-radius: 10px; overflow: hidden; }
+    .ns-palpites-header { background: #111; padding: 0.6rem 1rem; border-bottom: 0.5px solid #1e1e1e; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
+    .ns-palpites-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #1aff6e; letter-spacing: 0.15em; }
+    .ns-palpites-body { padding: 0.75rem 1rem; }
+    .ns-pal-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: center; margin-bottom: 7px; }
+    .ns-pal-row:last-child { margin-bottom: 0; }
+    .ns-pal-player { font-size: 14px; color: #e0e0e0; }
+    .ns-pal-score { font-family: 'Orbitron', monospace; font-size: 13px; color: #666; }
+    .ns-pal-result { font-family: 'Orbitron', monospace; font-size: 10px; padding: 2px 7px; border-radius: 3px; min-width: 28px; text-align: center; }
+    .pts-2 { background: #1aff6e22; color: #1aff6e; border: 1px solid #1aff6e55; }
+    .pts-1 { background: #ffa50022; color: #ffa500; border: 1px solid #ffa50055; }
+    .pts-0 { background: #ff3a3a15; color: #444; border: 1px solid #2a2a2a; }
+    .pending { background: #22222255; color: #555; border: 1px solid #2a2a2a; }
+
+    .ns-empty { text-align: center; padding: 2rem; color: #333; font-size: 14px; letter-spacing: 0.1em; }
+    .ns-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1aff6e; color: #000; font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; padding: 10px 22px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+    .ns-toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="ns-root">
+
+  <div class="ns-header">
+    <div class="ns-logo-row">
+      <span class="ns-org-badge">🐲</span>
+      <span class="ns-title">NOISE SPACE</span>
+      <span class="ns-org-badge">🐊</span>
+    </div>
+    <div class="ns-subtitle">CBLOL · Bolão de Palpites</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login-section" class="ns-login-card">
+    <div class="ns-login-title">ENTRAR NO BOLÃO</div>
+    <div class="ns-login-sub">Digite seu apelido pra participar</div>
+    <div class="ns-login-row">
+      <input id="login-name" placeholder="Seu apelido" maxlength="20" onkeydown="if(event.key==='Enter') doLogin()" />
+      <button onclick="doLogin()">Entrar</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main-section" style="display:none;">
+
+    <div class="ns-user-bar">
+      <span>👤 <span class="uname" id="user-label"></span></span>
+      <button class="ubtn" onclick="doLogout()">Trocar nome</button>
+    </div>
+
+    <div class="ns-rules">
+      <div class="ns-rule"><span class="ns-badge ns-badge-2">+2 pts</span> Acertou o placar exato</div>
+      <div class="ns-rule"><span class="ns-badge ns-badge-1">+1 pt</span> Acertou só o vencedor</div>
+    </div>
+
+    <div class="ns-section-title">🏆 Ranking</div>
+    <div class="ns-scoreboard">
+      <div class="ns-sb-header">
+        <div class="ns-sb-th">#</div>
+        <div class="ns-sb-th">Jogador</div>
+        <div class="ns-sb-th center">Pts</div>
+        <div class="ns-sb-th center">Exatos</div>
+        <div class="ns-sb-th center">Wins</div>
+      </div>
+      <div id="scoreboard-body"><div class="ns-empty">Nenhum palpite ainda</div></div>
+    </div>
+
+    <div class="ns-section-title" style="margin-top:1.5rem;">🎯 Meus Palpites</div>
+    <div id="my-guesses-section"></div>
+
+    <div class="ns-section-title" style="margin-top:1.5rem;">⚔️ Partidas</div>
+    <div class="ns-matches" id="matches-list">
+      <div class="ns-empty" style="background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:8px;">Nenhuma partida cadastrada</div>
+    </div>
+
+    <div id="all-guesses-section"></div>
+
+    <div class="ns-section-title" style="margin-top:1.5rem;">⚙️ Admin</div>
+    <div class="ns-admin">
+      <div class="ns-admin-header" onclick="toggleAdmin()">
+        <span class="ns-admin-title">⚡ Painel de Controle</span>
+        <span class="ns-admin-toggle" id="admin-toggle">▼ expandir</span>
+      </div>
+      <div class="ns-admin-body hidden" id="admin-body">
+
+        <div class="ns-form-label">Nova partida</div>
+        <div class="ns-form-row">
+          <input id="team1" placeholder="Time 1 (ex: LOUD)" />
+          <input id="team2" placeholder="Time 2 (ex: paiN)" />
+        </div>
+        <div class="ns-flex">
+          <input id="match-date" placeholder="Rodada (ex: Semana 3 - Sáb)" style="flex:1;min-width:140px;" />
+          <select id="match-format" style="width:90px;">
+            <option value="MD3">MD3</option>
+            <option value="MD5">MD5</option>
+          </select>
+          <button onclick="addMatch()">+ Partida</button>
+        </div>
+
+        <hr class="ns-divider">
+
+        <div class="ns-form-label">Resultado da partida</div>
+        <div class="ns-flex">
+          <select id="result-match" style="flex:1;min-width:140px;" onchange="updateResultInputs()">
+            <option value="">Selecione a partida</option>
+          </select>
+        </div>
+        <div id="result-score-area" style="margin-bottom:8px;">
+          <span style="font-size:12px;color:#555;font-family:Orbitron,monospace;letter-spacing:0.1em;">Selecione uma partida acima</span>
+        </div>
+        <button class="btn-orange" onclick="setResult()">Salvar Resultado</button>
+
+        <hr class="ns-divider">
+        <button class="btn-danger" onclick="if(confirm('Zerar tudo? Não tem volta!')) resetAll()">Zerar tudo</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="ns-toast" id="toast"></div>
+
+<script>
+  let state = { matches: [], guesses: [], players: {} };
+  let currentUser = null;
+
+  try { const s = localStorage.getItem('ns_cblol_v3'); if (s) state = JSON.parse(s); } catch(e) {}
+
+  function save() { try { localStorage.setItem('ns_cblol_v3', JSON.stringify(state)); } catch(e) {} }
+  function maxGames(fmt) { return fmt === 'MD5' ? 5 : 3; }
+  function winsNeeded(fmt) { return fmt === 'MD5' ? 3 : 2; }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  function doLogin() {
+    const name = document.getElementById('login-name').value.trim();
+    if (!name) return alert('Digite seu apelido!');
+    currentUser = name;
+    localStorage.setItem('ns_user', name);
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('main-section').style.display = 'block';
+    document.getElementById('user-label').textContent = name;
+    render();
+  }
+
+  function doLogout() {
+    currentUser = null;
+    localStorage.removeItem('ns_user');
+    document.getElementById('login-section').style.display = 'block';
+    document.getElementById('main-section').style.display = 'none';
+    document.getElementById('login-name').value = '';
+  }
+
+  const savedUser = localStorage.getItem('ns_user');
+  if (savedUser) {
+    currentUser = savedUser;
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('main-section').style.display = 'block';
+    document.getElementById('user-label').textContent = savedUser;
+  }
+
+  function getWinner(games, fmt) {
+    const need = winsNeeded(fmt);
+    let w1 = 0, w2 = 0;
+    for (const g of (games || [])) { if (!g) continue; if (g.w === 't1') w1++; else if (g.w === 't2') w2++; }
+    if (w1 >= need) return { winner: 't1', s1: w1, s2: w2 };
+    if (w2 >= need) return { winner: 't2', s1: w1, s2: w2 };
+    return null;
+  }
+
+  function getPoints(guess, match) {
+    const mResult = getWinner(match.games || [], match.format || 'MD3');
+    if (!mResult) return -1;
+    const gResult = getWinner(guess.games || [], match.format || 'MD3');
+    if (!gResult) return 0;
+    if (gResult.winner === mResult.winner && gResult.s1 === mResult.s1 && gResult.s2 === mResult.s2) return 2;
+    if (gResult.winner === mResult.winner) return 1;
+    return 0;
+  }
+
+  function calcScores() {
+    state.players = {};
+    for (const g of state.guesses) {
+      if (!state.players[g.player]) state.players[g.player] = { pts: 0, exact: 0, wins: 0 };
+      const m = state.matches.find(x => x.id === g.matchId);
+      if (!m) continue;
+      const pts = getPoints(g, m);
+      if (pts < 0) continue;
+      state.players[g.player].pts += pts;
+      if (pts === 2) state.players[g.player].exact++;
+      if (pts >= 1) state.players[g.player].wins++;
+    }
+    save();
+  }
+
+  window.saveMyGuesses = function() {
+    let saved = 0;
+    for (const m of state.matches) {
+      if (getWinner(m.games || [], m.format || 'MD3')) continue;
+      const max = maxGames(m.format || 'MD3');
+      const games = [];
+      let hasAny = false;
+      for (let i = 0; i < max; i++) {
+        const sel = document.getElementById(`my-pg-${m.id}-${i}`);
+        if (sel && sel.value) { games.push({ w: sel.value }); hasAny = true; }
+        else games.push(null);
+      }
+      if (!hasAny) continue;
+      const existing = state.guesses.find(g => g.player === currentUser && g.matchId === m.id);
+      if (existing) existing.games = games;
+      else state.guesses.push({ id: Date.now() + Math.random(), player: currentUser, matchId: m.id, games });
+      saved++;
+    }
+    calcScores(); render();
+    toast(saved > 0 ? `✅ ${saved} palpite(s) salvo(s)!` : 'Nenhum palpite preenchido.');
+  }
+
+  window.toggleAdmin = function() {
+    const b = document.getElementById('admin-body'), t = document.getElementById('admin-toggle');
+    if (b.classList.contains('hidden')) { b.classList.remove('hidden'); t.textContent = '▲ recolher'; }
+    else { b.classList.add('hidden'); t.textContent = '▼ expandir'; }
+  }
+
+  window.addMatch = function() {
+    const t1 = document.getElementById('team1').value.trim();
+    const t2 = document.getElementById('team2').value.trim();
+    const date = document.getElementById('match-date').value.trim();
+    const fmt = document.getElementById('match-format').value;
+    if (!t1 || !t2) return alert('Preencha os dois times!');
+    state.matches.push({ id: 'm_' + Date.now(), t1, t2, date, format: fmt, games: [] });
+    save(); render(); toast('Partida adicionada!');
+    document.getElementById('team1').value = '';
+    document.getElementById('team2').value = '';
+    document.getElementById('match-date').value = '';
+  }
+
+  window.updateResultInputs = function() {
+    const mid = document.getElementById('result-match').value;
+    const area = document.getElementById('result-score-area');
+    if (!mid) { area.innerHTML = '<span style="font-size:12px;color:#555;font-family:Orbitron,monospace;">Selecione uma partida acima</span>'; return; }
+    const m = state.matches.find(x => x.id === mid);
+    if (!m) return;
+    const max = maxGames(m.format);
+    const t1 = m.t1.substring(0, 5).toUpperCase();
+    const t2 = m.t2.substring(0, 5).toUpperCase();
+    let html = '<div class="ns-game-grid">';
+    for (let i = 0; i < max; i++) {
+      const g = (m.games || [])[i];
+      html += `<div class="ns-game-col"><span class="ns-game-col-label">J${i+1}</span>
+        <select class="ns-select-sm" id="rg-${i}-w" style="width:80px;font-size:12px;">
+          <option value="">-</option>
+          <option value="t1" ${g&&g.w==='t1'?'selected':''}>${t1}</option>
+          <option value="t2" ${g&&g.w==='t2'?'selected':''}>${t2}</option>
+        </select></div>`;
+    }
+    area.innerHTML = html + '</div>';
+  }
+
+  window.setResult = function() {
+    const mid = document.getElementById('result-match').value;
+    if (!mid) return alert('Selecione a partida!');
+    const m = state.matches.find(x => x.id === mid);
+    if (!m) return;
+    const max = maxGames(m.format);
+    const games = [];
+    for (let i = 0; i < max; i++) {
+      const sel = document.getElementById(`rg-${i}-w`);
+      games.push(sel && sel.value ? { w: sel.value } : null);
+    }
+    m.games = games;
+    calcScores(); render(); toast('Resultado salvo!');
+  }
+
+  window.resetAll = function() {
+    state = { matches: [], guesses: [], players: {} };
+    save(); render(); toast('Dados zerados!');
+  }
+
+  function render() {
+    updateResultSelect();
+    renderScoreboard();
+    renderMyGuesses();
+    renderMatches();
+    renderAllGuesses();
+  }
+
+  function updateResultSelect() {
+    const opts = state.matches.map(m => `<option value="${m.id}">${m.t1} vs ${m.t2}${m.date?' · '+m.date:''} [${m.format||'MD3'}]</option>`).join('');
+    document.getElementById('result-match').innerHTML = '<option value="">Selecione a partida</option>' + opts;
+  }
+
+  function renderScoreboard() {
+    const players = Object.entries(state.players).sort((a, b) => b[1].pts - a[1].pts);
+    if (!players.length) { document.getElementById('scoreboard-body').innerHTML = '<div class="ns-empty">Nenhum palpite registrado ainda</div>'; return; }
+    let html = '';
+    players.forEach(([name, p], i) => {
+      const rc = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const isMe = name === currentUser;
+      html += `<div class="ns-sb-row ${isMe?'me':''}">
+        <div class="ns-rank ${rc}">${i+1}</div>
+        <div class="ns-player-name">${name}${isMe?'<span class="ns-you-tag">VOCÊ</span>':''}</div>
+        <div class="ns-pts">${p.pts}</div>
+        <div class="ns-pts-sub">${p.exact}</div>
+        <div class="ns-pts-sub">${p.wins}</div>
+      </div>`;
+    });
+    document.getElementById('scoreboard-body').innerHTML = html;
+  }
+
+  function renderMyGuesses() {
+    const sec = document.getElementById('my-guesses-section');
+    const openMatches = state.matches.filter(m => !getWinner(m.games || [], m.format || 'MD3'));
+    if (!openMatches.length) {
+      sec.innerHTML = '<div class="ns-empty" style="margin:0 1.5rem;background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:10px;">Nenhuma partida aberta pra palpitar agora</div>';
+      return;
+    }
+    let html = `<div class="ns-guess-panel">
+      <div class="ns-guess-panel-header">
+        <span class="ns-guess-panel-title">Registrar Palpites</span>
+        <span style="font-size:12px;color:#555;">👤 ${currentUser}</span>
+      </div>
+      <div class="ns-guess-panel-body">`;
+    for (const m of openMatches) {
+      const fmt = m.format || 'MD3';
+      const max = maxGames(fmt);
+      const t1 = m.t1.substring(0, 5).toUpperCase();
+      const t2 = m.t2.substring(0, 5).toUpperCase();
+      const myGuess = state.guesses.find(g => g.player === currentUser && g.matchId === m.id);
+      const myGames = myGuess ? myGuess.games : [];
+      html += `<div class="ns-match-guess-row">
+        <div>
+          <div class="ns-match-guess-info">${m.t1} <span style="color:#333;">vs</span> ${m.t2}</div>
+          <div class="ns-match-guess-fmt">${fmt}${m.date?' · '+m.date:''}</div>
+        </div>
+        <div class="ns-guess-inputs">`;
+      for (let i = 0; i < max; i++) {
+        const saved = myGames[i];
+        html += `<div class="ns-game-col">
+          <span class="ns-game-col-label">J${i+1}</span>
+          <select class="ns-select-sm" id="my-pg-${m.id}-${i}" style="width:76px;font-size:12px;">
+            <option value="">-</option>
+            <option value="t1" ${saved&&saved.w==='t1'?'selected':''}>${t1}</option>
+            <option value="t2" ${saved&&saved.w==='t2'?'selected':''}>${t2}</option>
+          </select>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+    html += `</div><div style="padding:0 1rem 1rem;">
+      <button class="btn-save" onclick="saveMyGuesses()">💾 Salvar Meus Palpites</button>
+    </div></div>`;
+    sec.innerHTML = html;
+  }
+
+  function renderDots(games, fmt) {
+    const max = maxGames(fmt);
+    let html = '<div class="ns-game-dots">';
+    for (let i = 0; i < max; i++) {
+      const g = (games || [])[i];
+      if (!g || !g.w) html += '<div class="ns-dot empty"></div>';
+      else if (g.w === 't1') html += '<div class="ns-dot t1"></div>';
+      else html += '<div class="ns-dot t2"></div>';
+    }
+    return html + '</div>';
+  }
+
+  function renderMatches() {
+    const el = document.getElementById('matches-list');
+    if (!state.matches.length) { el.innerHTML = '<div class="ns-empty" style="background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:8px;">Nenhuma partida cadastrada</div>'; return; }
+    let html = '';
+    for (const m of [...state.matches].reverse()) {
+      const fmt = m.format || 'MD3';
+      const mResult = getWinner(m.games || [], fmt);
+      const done = !!mResult;
+      const w1 = done && mResult.winner === 't1';
+      const w2 = done && mResult.winner === 't2';
+      html += `<div class="ns-match-card">
+        <div class="ns-match-header">
+          <span class="ns-match-label">${m.date || 'CBLOL'}</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="ns-match-format">${fmt}</span>
+            <span class="ns-match-status ${done?'done':'pending'}">${done?'ENCERRADO':'AGUARDANDO'}</span>
+          </div>
+        </div>
+        <div class="ns-match-body">
+          <div class="ns-match-team ${w1?'winner':''}">${m.t1}</div>
+          <div class="ns-match-score">
+            <span class="ns-score-num ${w1?'winner':''}">${mResult?mResult.s1:'?'}</span>
+            <span class="sep">:</span>
+            <span class="ns-score-num ${w2?'winner':''}">${mResult?mResult.s2:'?'}</span>
+          </div>
+          <div class="ns-match-team right ${w2?'winner':''}">${m.t2}</div>
+        </div>
+        ${done ? renderDots(m.games, fmt) : ''}
+      </div>`;
+    }
+    el.innerHTML = html;
+  }
+
+  function renderAllGuesses() {
+    const sec = document.getElementById('all-guesses-section');
+    if (!state.matches.length) { sec.innerHTML = ''; return; }
+    let html = '<div class="ns-section-title" style="margin-top:1.5rem;">📋 Todos os Palpites</div>';
+    let hasAny = false;
+    for (const m of [...state.matches].reverse()) {
+      const mGuesses = state.guesses.filter(g => g.matchId === m.id);
+      if (!mGuesses.length) continue;
+      hasAny = true;
+      const fmt = m.format || 'MD3';
+      html += `<div class="ns-palpites">
+        <div class="ns-palpites-header">
+          <span class="ns-palpites-title">${m.t1} vs ${m.t2}</span>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span class="ns-match-format">${fmt}</span>
+            <span style="font-size:12px;color:#555;">${m.date||''}</span>
+          </div>
+        </div>
+        <div class="ns-palpites-body">`;
+      for (const g of mGuesses) {
+        const pts = getPoints(g, m);
+        const resClass = pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : pts === 0 ? 'pts-0' : 'pending';
+        const resLabel = pts === 2 ? '+2' : pts === 1 ? '+1' : pts === 0 ? '0' : '?';
+        const gResult = getWinner(g.games || [], fmt);
+        const scoreStr = gResult ? `${gResult.s1}:${gResult.s2}` : '?:?';
+        const isMe = g.player === currentUser;
+        html += `<div class="ns-pal-row">
+          <div class="ns-pal-player">${g.player}${isMe?' <span style="font-size:10px;color:#1aff6e55;">(você)</span>':''}</div>
+          <div class="ns-pal-score">${scoreStr}</div>
+          <div class="ns-pal-result ${resClass}">${resLabel}</div>
+        </div>`;
+      }
+      html += `</div></div>`;
+    }
+    if (!hasAny) sec.innerHTML = '';
+    else sec.innerHTML = html;
+  }
+
+  calcScores();
+  if (currentUser) render();
+</script>
+</body>
+</html>
