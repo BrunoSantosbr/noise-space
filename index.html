@@ -50,9 +50,7 @@
     .ns-sb-row:hover { background: #141414; }
     .ns-sb-row.me { background: #1aff6e08; border-left: 2px solid #1aff6e55; }
     .ns-rank { font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; color: #333; text-align: center; }
-    .ns-rank.gold { color: #ffd700; }
-    .ns-rank.silver { color: #c0c0c0; }
-    .ns-rank.bronze { color: #cd7f32; }
+    .ns-rank.gold { color: #ffd700; } .ns-rank.silver { color: #c0c0c0; } .ns-rank.bronze { color: #cd7f32; }
     .ns-player-name { font-size: 15px; font-weight: 600; color: #e0e0e0; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px; }
     .ns-you-tag { font-family: 'Orbitron', monospace; font-size: 8px; padding: 1px 5px; border-radius: 3px; background: #1aff6e22; color: #1aff6e; border: 1px solid #1aff6e33; }
     .ns-pts { text-align: center; font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; color: #1aff6e; }
@@ -132,12 +130,16 @@
     .pending { background: #22222255; color: #555; border: 1px solid #2a2a2a; }
 
     .ns-empty { text-align: center; padding: 2rem; color: #333; font-size: 14px; letter-spacing: 0.1em; }
-    .ns-loading { text-align: center; padding: 2rem; color: #444; font-size: 13px; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; }
+    .ns-loading { text-align: center; padding: 1.5rem; color: #444; font-size: 12px; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; }
     .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #1aff6e33; border-top-color: #1aff6e; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
     .ns-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1aff6e; color: #000; font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; padding: 10px 22px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
     .ns-toast.show { opacity: 1; }
-    .ns-toast.err { background: #ff4444; color: #fff; }
+    .ns-toast.err { background: #ff4444 !important; color: #fff !important; }
+
+    .ns-binid-box { background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin: 0 1.5rem 0; }
+    .ns-binid-label { font-size: 11px; color: #555; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; margin-bottom: 6px; }
+    .ns-binid-row { display: flex; gap: 8px; align-items: center; }
   </style>
 </head>
 <body>
@@ -152,8 +154,22 @@
     <div class="ns-subtitle">CBLOL · Bolão de Palpites</div>
   </div>
 
+  <!-- SETUP (aparece só se não tiver bin configurado) -->
+  <div id="setup-section" style="display:none;">
+    <div class="ns-login-card" style="border-color:#ffa50033;">
+      <div class="ns-login-title" style="color:#ffa500;">CONFIGURAÇÃO INICIAL</div>
+      <div class="ns-login-sub">Cole o <b>Bin ID</b> do JSONBin abaixo.<br>Se ainda não tiver, clique em "Criar automaticamente".</div>
+      <div class="ns-login-row" style="flex-direction:column;gap:10px;">
+        <input id="setup-binid" placeholder="Cole o Bin ID aqui (ex: 64abc123...)" />
+        <button onclick="setupWithId()" style="width:100%;">Usar este Bin ID</button>
+        <button onclick="createBinAuto()" class="btn-orange" style="width:100%;">✨ Criar automaticamente</button>
+      </div>
+      <div id="setup-status" style="margin-top:12px;font-size:12px;color:#555;font-family:Orbitron,monospace;letter-spacing:0.1em;"></div>
+    </div>
+  </div>
+
   <!-- LOGIN -->
-  <div id="login-section" class="ns-login-card">
+  <div id="login-section" class="ns-login-card" style="display:none;">
     <div class="ns-login-title">ENTRAR NO BOLÃO</div>
     <div class="ns-login-sub">Digite seu apelido pra participar</div>
     <div class="ns-login-row">
@@ -164,7 +180,6 @@
 
   <!-- MAIN -->
   <div id="main-section" style="display:none;">
-
     <div class="ns-user-bar">
       <span>👤 <span class="uname" id="user-label"></span></span>
       <button class="ubtn" onclick="doLogout()">Trocar nome</button>
@@ -172,7 +187,7 @@
     <div class="ns-sync-bar">
       <div class="ns-sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Conectando...</span>
-      <button onclick="loadData()" style="margin-left:auto;padding:2px 8px;font-size:9px;background:none;border:1px solid #222;color:#444;letter-spacing:0.1em;">↻ Atualizar</button>
+      <button onclick="loadData(true)" style="margin-left:auto;padding:2px 8px;font-size:9px;background:none;border:1px solid #222;color:#444;letter-spacing:0.1em;">↻ Atualizar</button>
     </div>
 
     <div class="ns-rules">
@@ -183,11 +198,8 @@
     <div class="ns-section-title">🏆 Ranking</div>
     <div class="ns-scoreboard">
       <div class="ns-sb-header">
-        <div class="ns-sb-th">#</div>
-        <div class="ns-sb-th">Jogador</div>
-        <div class="ns-sb-th center">Pts</div>
-        <div class="ns-sb-th center">Exatos</div>
-        <div class="ns-sb-th center">Wins</div>
+        <div class="ns-sb-th">#</div><div class="ns-sb-th">Jogador</div>
+        <div class="ns-sb-th center">Pts</div><div class="ns-sb-th center">Exatos</div><div class="ns-sb-th center">Wins</div>
       </div>
       <div id="scoreboard-body"><div class="ns-loading"><span class="spinner"></span>Carregando...</div></div>
     </div>
@@ -225,25 +237,23 @@
         <div id="result-score-area" style="margin-bottom:8px;"><span style="font-size:12px;color:#555;font-family:Orbitron,monospace;">Selecione uma partida acima</span></div>
         <button class="btn-orange" onclick="setResult()">Salvar Resultado</button>
         <hr class="ns-divider">
+        <div class="ns-form-label" style="margin-bottom:8px;">Bin ID atual: <span id="binid-display" style="color:#1aff6e;font-size:11px;"></span></div>
         <button class="btn-danger" onclick="if(confirm('Zerar tudo? Não tem volta!')) resetAll()">Zerar tudo</button>
+        <button onclick="resetBin()" style="margin-left:8px;background:#ffffff08;border-color:#333;color:#555;">Trocar banco de dados</button>
       </div>
     </div>
-
   </div>
 </div>
 <div class="ns-toast" id="toast"></div>
 
 <script>
-  // ── CONFIG ──────────────────────────────────────────
-  const API_KEY  = '$2a$10$eXQh7nMngM1YJIMtd6SF8uKT4zIEbtgeiZyN1dGhyGYjLJCwij0G6';
-  const BIN_NAME = 'noise-space-cblol';
-  const BASE_URL = 'https://api.jsonbin.io/v3';
-  // ─────────────────────────────────────────────────────
+  const API_KEY = '$2a$10$eXQh7nMngM1YJIMtd6SF8uKT4zIEbtgeiZyN1dGhyGYjLJCwij0G6';
+  const BASE    = 'https://api.jsonbin.io/v3/b';
 
-  let binId = localStorage.getItem('ns_binId') || null;
-  let state = { matches: [], guesses: [] };
-  let currentUser = null;
-  let saving = false;
+  let binId       = localStorage.getItem('ns_binId_v2') || null;
+  let currentUser = localStorage.getItem('ns_user') || null;
+  let state       = { matches: [], guesses: [] };
+  let saving      = false;
 
   // ── TOAST ────────────────────────────────────────────
   function toast(msg, err = false) {
@@ -253,48 +263,118 @@
     setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  // ── SYNC STATUS ──────────────────────────────────────
-  function syncStatus(status, text) {
-    const d = document.getElementById('sync-dot');
-    const s = document.getElementById('sync-text');
-    d.className = 'ns-sync-dot ' + status;
-    s.textContent = text;
+  // ── SYNC DOT ─────────────────────────────────────────
+  function syncStatus(s, text) {
+    document.getElementById('sync-dot').className = 'ns-sync-dot ' + s;
+    document.getElementById('sync-text').textContent = text;
   }
 
-  // ── JSONBIN API ──────────────────────────────────────
-  async function createBin() {
-    syncStatus('loading', 'Criando banco de dados...');
-    const res = await fetch(`${BASE_URL}/b`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY, 'X-Bin-Name': BIN_NAME, 'X-Bin-Private': 'false' },
-      body: JSON.stringify({ matches: [], guesses: [] })
-    });
-    const data = await res.json();
-    if (data.metadata && data.metadata.id) {
-      binId = data.metadata.id;
-      localStorage.setItem('ns_binId', binId);
-      syncStatus('ok', 'Conectado · ' + new Date().toLocaleTimeString('pt-BR'));
-      return true;
+  // ── INIT ─────────────────────────────────────────────
+  function init() {
+    if (!binId) {
+      // Sem bin configurado → mostra tela de setup
+      document.getElementById('setup-section').style.display = 'block';
+      return;
     }
-    syncStatus('err', 'Erro ao criar banco');
-    return false;
+    if (!currentUser) {
+      document.getElementById('login-section').style.display = 'block';
+      return;
+    }
+    showMain();
   }
 
-  async function loadData() {
-    syncStatus('loading', 'Sincronizando...');
+  // ── SETUP ────────────────────────────────────────────
+  window.setupWithId = function() {
+    const id = document.getElementById('setup-binid').value.trim();
+    if (!id) return alert('Cole o Bin ID!');
+    binId = id;
+    localStorage.setItem('ns_binId_v2', binId);
+    document.getElementById('setup-section').style.display = 'none';
+    init();
+  }
+
+  window.createBinAuto = async function() {
+    const status = document.getElementById('setup-status');
+    status.textContent = '⏳ Criando banco de dados...';
     try {
-      if (!binId) {
-        // Tenta encontrar bin existente pelo nome
-        const listRes = await fetch(`${BASE_URL}/b?page=1&count=20`, { headers: { 'X-Master-Key': API_KEY } });
-        const listData = await listRes.json();
-        if (listData.result) {
-          const found = listData.result.find(b => b.record && b.record.name === BIN_NAME || b.metadata && b.metadata.name === BIN_NAME);
-          if (found) { binId = found.metadata ? found.metadata.id : found.id; localStorage.setItem('ns_binId', binId); }
-        }
-        if (!binId) { await createBin(); render(); return; }
+      const res = await fetch(BASE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': API_KEY,
+          'X-Bin-Name': 'noise-space-cblol',
+          'X-Bin-Private': 'false'
+        },
+        body: JSON.stringify({ matches: [], guesses: [] })
+      });
+      const data = await res.json();
+      if (data && data.metadata && data.metadata.id) {
+        binId = data.metadata.id;
+        localStorage.setItem('ns_binId_v2', binId);
+        status.textContent = '✅ Criado! Bin ID: ' + binId;
+        setTimeout(() => {
+          document.getElementById('setup-section').style.display = 'none';
+          init();
+        }, 1200);
+      } else {
+        status.textContent = '❌ Erro: ' + JSON.stringify(data);
       }
-      const res = await fetch(`${BASE_URL}/b/${binId}/latest`, { headers: { 'X-Master-Key': API_KEY } });
-      if (!res.ok) { binId = null; localStorage.removeItem('ns_binId'); await loadData(); return; }
+    } catch(e) {
+      status.textContent = '❌ Erro de conexão: ' + e.message;
+    }
+  }
+
+  window.resetBin = function() {
+    if (!confirm('Trocar o banco de dados? O Bin ID atual será esquecido.')) return;
+    localStorage.removeItem('ns_binId_v2');
+    binId = null;
+    location.reload();
+  }
+
+  // ── LOGIN ────────────────────────────────────────────
+  window.doLogin = function() {
+    const name = document.getElementById('login-name').value.trim();
+    if (!name) return alert('Digite seu apelido!');
+    currentUser = name;
+    localStorage.setItem('ns_user', name);
+    document.getElementById('login-section').style.display = 'none';
+    showMain();
+  }
+
+  window.doLogout = function() {
+    currentUser = null;
+    localStorage.removeItem('ns_user');
+    document.getElementById('main-section').style.display = 'none';
+    document.getElementById('login-section').style.display = 'block';
+    document.getElementById('login-name').value = '';
+  }
+
+  function showMain() {
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('main-section').style.display = 'block';
+    document.getElementById('user-label').textContent = currentUser;
+    document.getElementById('binid-display').textContent = binId ? binId.substring(0,8) + '...' : '-';
+    loadData(true);
+  }
+
+  // ── JSONBIN ──────────────────────────────────────────
+  async function loadData(showSpinner = false) {
+    if (showSpinner) syncStatus('loading', 'Sincronizando...');
+    try {
+      const res = await fetch(`${BASE}/${binId}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        // Bin não encontrado → volta pra setup
+        if (res.status === 404) {
+          toast('Bin ID inválido. Configure novamente.', true);
+          localStorage.removeItem('ns_binId_v2');
+          setTimeout(() => location.reload(), 2000);
+          return;
+        }
+        throw new Error(JSON.stringify(err));
+      }
       const data = await res.json();
       state = data.record || { matches: [], guesses: [] };
       if (!state.matches) state.matches = [];
@@ -308,55 +388,29 @@
   }
 
   async function saveData() {
-    if (!binId || saving) return;
+    if (!binId || saving) return false;
     saving = true;
     syncStatus('loading', 'Salvando...');
     try {
-      const res = await fetch(`${BASE_URL}/b/${binId}`, {
+      const res = await fetch(`${BASE}/${binId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
         body: JSON.stringify(state)
       });
-      if (!res.ok) throw new Error('Save failed');
+      if (!res.ok) throw new Error('Save failed ' + res.status);
       syncStatus('ok', 'Salvo · ' + new Date().toLocaleTimeString('pt-BR'));
+      saving = false;
+      return true;
     } catch(e) {
       syncStatus('err', 'Erro ao salvar');
-      toast('Erro ao salvar dados!', true);
+      toast('Erro ao salvar!', true);
+      saving = false;
+      return false;
     }
-    saving = false;
   }
 
-  // ── LOGIN ────────────────────────────────────────────
-  window.doLogin = function() {
-    const name = document.getElementById('login-name').value.trim();
-    if (!name) return alert('Digite seu apelido!');
-    currentUser = name;
-    localStorage.setItem('ns_user', name);
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('main-section').style.display = 'block';
-    document.getElementById('user-label').textContent = name;
-    loadData();
-  }
-
-  window.doLogout = function() {
-    currentUser = null;
-    localStorage.removeItem('ns_user');
-    document.getElementById('login-section').style.display = 'block';
-    document.getElementById('main-section').style.display = 'none';
-    document.getElementById('login-name').value = '';
-  }
-
-  const savedUser = localStorage.getItem('ns_user');
-  if (savedUser) {
-    currentUser = savedUser;
-    document.getElementById('login-section').style.display = 'none';
-    document.getElementById('main-section').style.display = 'block';
-    document.getElementById('user-label').textContent = savedUser;
-    loadData();
-  }
-
-  // ── AUTO REFRESH a cada 30s ──────────────────────────
-  setInterval(() => { if (currentUser) loadData(); }, 30000);
+  // Auto refresh a cada 30s
+  setInterval(() => { if (currentUser && binId) loadData(); }, 30000);
 
   // ── HELPERS ──────────────────────────────────────────
   function maxGames(fmt) { return fmt === 'MD5' ? 5 : 3; }
@@ -396,7 +450,7 @@
     return players;
   }
 
-  // ── SALVAR PALPITES ───────────────────────────────────
+  // ── SALVAR PALPITES ──────────────────────────────────
   window.saveMyGuesses = async function() {
     let saved = 0;
     for (const m of state.matches) {
@@ -412,19 +466,19 @@
       if (!hasAny) continue;
       const existing = state.guesses.find(g => g.player === currentUser && g.matchId === m.id);
       if (existing) existing.games = games;
-      else state.guesses.push({ id: Date.now() + Math.random(), player: currentUser, matchId: m.id, games });
+      else state.guesses.push({ id: 'g_' + Date.now(), player: currentUser, matchId: m.id, games });
       saved++;
     }
     if (saved > 0) {
-      await saveData();
-      toast(`✅ ${saved} palpite(s) salvo(s)!`);
+      const ok = await saveData();
+      if (ok) toast(`✅ ${saved} palpite(s) salvo(s)!`);
       render();
     } else {
       toast('Nenhum palpite preenchido.');
     }
   }
 
-  // ── ADMIN ─────────────────────────────────────────────
+  // ── ADMIN ────────────────────────────────────────────
   window.toggleAdmin = function() {
     const b = document.getElementById('admin-body'), t = document.getElementById('admin-toggle');
     if (b.classList.contains('hidden')) { b.classList.remove('hidden'); t.textContent = '▲ recolher'; }
@@ -438,8 +492,8 @@
     const fmt = document.getElementById('match-format').value;
     if (!t1 || !t2) return alert('Preencha os dois times!');
     state.matches.push({ id: 'm_' + Date.now(), t1, t2, date, format: fmt, games: [] });
-    await saveData();
-    toast('Partida adicionada!');
+    const ok = await saveData();
+    if (ok) toast('Partida adicionada!');
     render();
     document.getElementById('team1').value = '';
     document.getElementById('team2').value = '';
@@ -453,11 +507,10 @@
     const m = state.matches.find(x => x.id === mid);
     if (!m) return;
     const max = maxGames(m.format);
-    const t1 = m.t1.substring(0, 5).toUpperCase();
-    const t2 = m.t2.substring(0, 5).toUpperCase();
+    const t1 = m.t1.substring(0,5).toUpperCase(), t2 = m.t2.substring(0,5).toUpperCase();
     let html = '<div class="ns-game-grid">';
     for (let i = 0; i < max; i++) {
-      const g = (m.games || [])[i];
+      const g = (m.games||[])[i];
       html += `<div class="ns-game-col"><span class="ns-game-col-label">J${i+1}</span>
         <select class="ns-select-sm" id="rg-${i}-w" style="width:80px;font-size:12px;">
           <option value="">-</option>
@@ -480,19 +533,19 @@
       games.push(sel && sel.value ? { w: sel.value } : null);
     }
     m.games = games;
-    await saveData();
-    toast('Resultado salvo!');
+    const ok = await saveData();
+    if (ok) toast('Resultado salvo!');
     render();
   }
 
   window.resetAll = async function() {
     state = { matches: [], guesses: [] };
-    await saveData();
-    toast('Dados zerados!');
+    const ok = await saveData();
+    if (ok) toast('Dados zerados!');
     render();
   }
 
-  // ── RENDER ────────────────────────────────────────────
+  // ── RENDER ───────────────────────────────────────────
   function render() {
     const scores = calcScores();
     updateResultSelect();
@@ -508,18 +561,16 @@
   }
 
   function renderScoreboard(scores) {
-    const players = Object.entries(scores).sort((a, b) => b[1].pts - a[1].pts);
+    const players = Object.entries(scores).sort((a,b) => b[1].pts - a[1].pts);
     if (!players.length) { document.getElementById('scoreboard-body').innerHTML = '<div class="ns-empty">Nenhum palpite ainda</div>'; return; }
     let html = '';
     players.forEach(([name, p], i) => {
-      const rc = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const rc = i===0?'gold':i===1?'silver':i===2?'bronze':'';
       const isMe = name === currentUser;
       html += `<div class="ns-sb-row ${isMe?'me':''}">
         <div class="ns-rank ${rc}">${i+1}</div>
         <div class="ns-player-name">${name}${isMe?'<span class="ns-you-tag">VOCÊ</span>':''}</div>
-        <div class="ns-pts">${p.pts}</div>
-        <div class="ns-pts-sub">${p.exact}</div>
-        <div class="ns-pts-sub">${p.wins}</div>
+        <div class="ns-pts">${p.pts}</div><div class="ns-pts-sub">${p.exact}</div><div class="ns-pts-sub">${p.wins}</div>
       </div>`;
     });
     document.getElementById('scoreboard-body').innerHTML = html;
@@ -527,29 +578,21 @@
 
   function renderMyGuesses() {
     const sec = document.getElementById('my-guesses-section');
-    const openMatches = state.matches.filter(m => !getWinner(m.games || [], m.format || 'MD3'));
-    if (!openMatches.length) {
-      sec.innerHTML = '<div class="ns-empty" style="margin:0 1.5rem;background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:10px;">Nenhuma partida aberta pra palpitar agora</div>';
-      return;
-    }
+    const open = state.matches.filter(m => !getWinner(m.games||[], m.format||'MD3'));
+    if (!open.length) { sec.innerHTML = '<div class="ns-empty" style="margin:0 1.5rem;background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:10px;">Nenhuma partida aberta pra palpitar agora</div>'; return; }
     let html = `<div class="ns-guess-panel">
       <div class="ns-guess-panel-header">
         <span class="ns-guess-panel-title">Registrar Palpites</span>
         <span style="font-size:12px;color:#555;">👤 ${currentUser}</span>
-      </div>
-      <div class="ns-guess-panel-body">`;
-    for (const m of openMatches) {
-      const fmt = m.format || 'MD3';
-      const max = maxGames(fmt);
-      const t1 = m.t1.substring(0, 5).toUpperCase();
-      const t2 = m.t2.substring(0, 5).toUpperCase();
-      const myGuess = state.guesses.find(g => g.player === currentUser && g.matchId === m.id);
+      </div><div class="ns-guess-panel-body">`;
+    for (const m of open) {
+      const fmt = m.format||'MD3', max = maxGames(fmt);
+      const t1 = m.t1.substring(0,5).toUpperCase(), t2 = m.t2.substring(0,5).toUpperCase();
+      const myGuess = state.guesses.find(g => g.player===currentUser && g.matchId===m.id);
       const myGames = myGuess ? myGuess.games : [];
       html += `<div class="ns-match-guess-row">
-        <div>
-          <div class="ns-match-guess-info">${m.t1} <span style="color:#333;">vs</span> ${m.t2}</div>
-          <div class="ns-match-guess-fmt">${fmt}${m.date?' · '+m.date:''}</div>
-        </div>
+        <div><div class="ns-match-guess-info">${m.t1} <span style="color:#333;">vs</span> ${m.t2}</div>
+        <div class="ns-match-guess-fmt">${fmt}${m.date?' · '+m.date:''}</div></div>
         <div class="ns-guess-inputs">`;
       for (let i = 0; i < max; i++) {
         const sv = myGames[i];
@@ -572,10 +615,8 @@
     const max = maxGames(fmt);
     let html = '<div class="ns-game-dots">';
     for (let i = 0; i < max; i++) {
-      const g = (games || [])[i];
-      if (!g || !g.w) html += '<div class="ns-dot empty"></div>';
-      else if (g.w === 't1') html += '<div class="ns-dot t1"></div>';
-      else html += '<div class="ns-dot t2"></div>';
+      const g = (games||[])[i];
+      html += !g||!g.w ? '<div class="ns-dot empty"></div>' : g.w==='t1' ? '<div class="ns-dot t1"></div>' : '<div class="ns-dot t2"></div>';
     }
     return html + '</div>';
   }
@@ -585,14 +626,11 @@
     if (!state.matches.length) { el.innerHTML = '<div class="ns-empty" style="background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:8px;">Nenhuma partida cadastrada</div>'; return; }
     let html = '';
     for (const m of [...state.matches].reverse()) {
-      const fmt = m.format || 'MD3';
-      const mResult = getWinner(m.games || [], fmt);
-      const done = !!mResult;
-      const w1 = done && mResult.winner === 't1';
-      const w2 = done && mResult.winner === 't2';
+      const fmt = m.format||'MD3', mResult = getWinner(m.games||[], fmt), done = !!mResult;
+      const w1 = done && mResult.winner==='t1', w2 = done && mResult.winner==='t2';
       html += `<div class="ns-match-card">
         <div class="ns-match-header">
-          <span class="ns-match-label">${m.date || 'CBLOL'}</span>
+          <span class="ns-match-label">${m.date||'CBLOL'}</span>
           <div style="display:flex;gap:6px;align-items:center;">
             <span class="ns-match-format">${fmt}</span>
             <span class="ns-match-status ${done?'done':'pending'}">${done?'ENCERRADO':'AGUARDANDO'}</span>
@@ -607,7 +645,7 @@
           </div>
           <div class="ns-match-team right ${w2?'winner':''}">${m.t2}</div>
         </div>
-        ${done ? renderDots(m.games, fmt) : ''}
+        ${done?renderDots(m.games,fmt):''}
       </div>`;
     }
     el.innerHTML = html;
@@ -619,10 +657,10 @@
     let html = '<div class="ns-section-title" style="margin-top:1.5rem;">📋 Todos os Palpites</div>';
     let hasAny = false;
     for (const m of [...state.matches].reverse()) {
-      const mGuesses = state.guesses.filter(g => g.matchId === m.id);
+      const mGuesses = state.guesses.filter(g => g.matchId===m.id);
       if (!mGuesses.length) continue;
       hasAny = true;
-      const fmt = m.format || 'MD3';
+      const fmt = m.format||'MD3';
       html += `<div class="ns-palpites">
         <div class="ns-palpites-header">
           <span class="ns-palpites-title">${m.t1} vs ${m.t2}</span>
@@ -630,19 +668,18 @@
             <span class="ns-match-format">${fmt}</span>
             <span style="font-size:12px;color:#555;">${m.date||''}</span>
           </div>
-        </div>
-        <div class="ns-palpites-body">`;
+        </div><div class="ns-palpites-body">`;
       for (const g of mGuesses) {
-        const pts = getPoints(g, m);
-        const resClass = pts===2?'pts-2':pts===1?'pts-1':pts===0?'pts-0':'pending';
-        const resLabel = pts===2?'+2':pts===1?'+1':pts===0?'0':'?';
+        const pts = getPoints(g,m);
+        const rc = pts===2?'pts-2':pts===1?'pts-1':pts===0?'pts-0':'pending';
+        const rl = pts===2?'+2':pts===1?'+1':pts===0?'0':'?';
         const gResult = getWinner(g.games||[], fmt);
-        const scoreStr = gResult?`${gResult.s1}:${gResult.s2}`:'?:?';
-        const isMe = g.player === currentUser;
+        const ss = gResult?`${gResult.s1}:${gResult.s2}`:'?:?';
+        const isMe = g.player===currentUser;
         html += `<div class="ns-pal-row">
           <div class="ns-pal-player">${g.player}${isMe?' <span style="font-size:10px;color:#1aff6e55;">(você)</span>':''}</div>
-          <div class="ns-pal-score">${scoreStr}</div>
-          <div class="ns-pal-result ${resClass}">${resLabel}</div>
+          <div class="ns-pal-score">${ss}</div>
+          <div class="ns-pal-result ${rc}">${rl}</div>
         </div>`;
       }
       html += `</div></div>`;
@@ -650,6 +687,9 @@
     if (!hasAny) sec.innerHTML = '';
     else sec.innerHTML = html;
   }
+
+  // ── START ────────────────────────────────────────────
+  init();
 </script>
 </body>
 </html>
