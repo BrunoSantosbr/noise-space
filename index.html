@@ -21,12 +21,14 @@
     .ns-user-bar .uname { color: #1aff6e; font-weight: 600; }
     .ns-user-bar .ubtn { background: none; border: none; color: #444; font-size: 11px; font-family: 'Orbitron', monospace; cursor: pointer; padding: 2px 6px; letter-spacing: 0.1em; }
     .ns-user-bar .ubtn:hover { color: #ff4444; background: none; }
+
     .ns-sync-bar { background: #0a0a0a; border-bottom: 0.5px solid #1a1a1a; padding: 5px 1.5rem; display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', monospace; font-size: 10px; color: #444; }
     .ns-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #333; flex-shrink: 0; }
     .ns-sync-dot.ok { background: #1aff6e; box-shadow: 0 0 6px #1aff6e88; }
     .ns-sync-dot.err { background: #ff4444; }
     .ns-sync-dot.loading { background: #ffa500; animation: pulse 1s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .ns-rules { background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 1.5rem; display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
     .ns-rule { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #aaa; }
@@ -132,14 +134,14 @@
     .ns-empty { text-align: center; padding: 2rem; color: #333; font-size: 14px; letter-spacing: 0.1em; }
     .ns-loading { text-align: center; padding: 1.5rem; color: #444; font-size: 12px; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; }
     .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #1aff6e33; border-top-color: #1aff6e; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
     .ns-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1aff6e; color: #000; font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; padding: 10px 22px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
     .ns-toast.show { opacity: 1; }
     .ns-toast.err { background: #ff4444 !important; color: #fff !important; }
 
-    .ns-binid-box { background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin: 0 1.5rem 0; }
-    .ns-binid-label { font-size: 11px; color: #555; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; margin-bottom: 6px; }
-    .ns-binid-row { display: flex; gap: 8px; align-items: center; }
+    .ns-error-card { margin: 2rem 1.5rem; background: #1a0a0a; border: 0.5px solid #ff444433; border-radius: 12px; padding: 1.5rem; }
+    .ns-error-title { font-family: 'Orbitron', monospace; font-size: 13px; color: #ff4444; margin-bottom: 0.5rem; }
+    .ns-error-body { font-size: 13px; color: #888; line-height: 1.6; }
+    .ns-error-body code { background: #111; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #ffa500; }
   </style>
 </head>
 <body>
@@ -154,27 +156,23 @@
     <div class="ns-subtitle">CBLOL · Bolão de Palpites</div>
   </div>
 
-  <!-- SETUP (aparece só se não tiver bin configurado) -->
-  <div id="setup-section" style="display:none;">
-    <div class="ns-login-card" style="border-color:#ffa50033;">
-      <div class="ns-login-title" style="color:#ffa500;">CONFIGURAÇÃO INICIAL</div>
-      <div class="ns-login-sub">Cole o <b>Bin ID</b> do JSONBin abaixo.<br>Se ainda não tiver, clique em "Criar automaticamente".</div>
-      <div class="ns-login-row" style="flex-direction:column;gap:10px;">
-        <input id="setup-binid" placeholder="Cole o Bin ID aqui (ex: 64abc123...)" />
-        <button onclick="setupWithId()" style="width:100%;">Usar este Bin ID</button>
-        <button onclick="createBinAuto()" class="btn-orange" style="width:100%;">✨ Criar automaticamente</button>
-      </div>
-      <div id="setup-status" style="margin-top:12px;font-size:12px;color:#555;font-family:Orbitron,monospace;letter-spacing:0.1em;"></div>
+  <!-- ERRO DE CONFIG -->
+  <div id="error-section" style="display:none;">
+    <div class="ns-error-card">
+      <div class="ns-error-title">⚠️ Erro de conexão com banco de dados</div>
+      <div class="ns-error-body" id="error-body"></div>
     </div>
   </div>
 
   <!-- LOGIN -->
-  <div id="login-section" class="ns-login-card" style="display:none;">
-    <div class="ns-login-title">ENTRAR NO BOLÃO</div>
-    <div class="ns-login-sub">Digite seu apelido pra participar</div>
-    <div class="ns-login-row">
-      <input id="login-name" placeholder="Seu apelido" maxlength="20" onkeydown="if(event.key==='Enter') doLogin()" />
-      <button onclick="doLogin()">Entrar</button>
+  <div id="login-section" style="display:none;">
+    <div class="ns-login-card">
+      <div class="ns-login-title">ENTRAR NO BOLÃO</div>
+      <div class="ns-login-sub">Digite seu apelido pra participar</div>
+      <div class="ns-login-row">
+        <input id="login-name" placeholder="Seu apelido" maxlength="20" onkeydown="if(event.key==='Enter') doLogin()" />
+        <button onclick="doLogin()">Entrar</button>
+      </div>
     </div>
   </div>
 
@@ -187,7 +185,7 @@
     <div class="ns-sync-bar">
       <div class="ns-sync-dot loading" id="sync-dot"></div>
       <span id="sync-text">Conectando...</span>
-      <button onclick="loadData(true)" style="margin-left:auto;padding:2px 8px;font-size:9px;background:none;border:1px solid #222;color:#444;letter-spacing:0.1em;">↻ Atualizar</button>
+      <button onclick="loadData()" style="margin-left:auto;padding:2px 8px;font-size:9px;background:none;border:1px solid #222;color:#444;letter-spacing:0.1em;">↻ Atualizar</button>
     </div>
 
     <div class="ns-rules">
@@ -237,9 +235,7 @@
         <div id="result-score-area" style="margin-bottom:8px;"><span style="font-size:12px;color:#555;font-family:Orbitron,monospace;">Selecione uma partida acima</span></div>
         <button class="btn-orange" onclick="setResult()">Salvar Resultado</button>
         <hr class="ns-divider">
-        <div class="ns-form-label" style="margin-bottom:8px;">Bin ID atual: <span id="binid-display" style="color:#1aff6e;font-size:11px;"></span></div>
         <button class="btn-danger" onclick="if(confirm('Zerar tudo? Não tem volta!')) resetAll()">Zerar tudo</button>
-        <button onclick="resetBin()" style="margin-left:8px;background:#ffffff08;border-color:#333;color:#555;">Trocar banco de dados</button>
       </div>
     </div>
   </div>
@@ -247,15 +243,16 @@
 <div class="ns-toast" id="toast"></div>
 
 <script>
-  const API_KEY = '$2a$10$eXQh7nMngM1YJIMtd6SF8uKT4zIEbtgeiZyN1dGhyGYjLJCwij0G6';
-  const BASE    = 'https://api.jsonbin.io/v3/b';
+  // ── SUPABASE CONFIG ──────────────────────────────────
+  const SUPA_URL = 'https://hpkekujzbjzzgvukadlk.supabase.co';
+  const SUPA_KEY = 'sb_publishable_l9iNTaUZhaAVuIf0QfTrzw_ZXI1bKLc';
+  const HEADERS  = { 'Content-Type': 'application/json', 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY };
+  // ─────────────────────────────────────────────────────
 
-  let binId       = localStorage.getItem('ns_binId_v2') || null;
-  let currentUser = localStorage.getItem('ns_user') || null;
   let state       = { matches: [], guesses: [] };
+  let currentUser = localStorage.getItem('ns_user') || null;
   let saving      = false;
 
-  // ── TOAST ────────────────────────────────────────────
   function toast(msg, err = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
@@ -263,75 +260,91 @@
     setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  // ── SYNC DOT ─────────────────────────────────────────
   function syncStatus(s, text) {
     document.getElementById('sync-dot').className = 'ns-sync-dot ' + s;
     document.getElementById('sync-text').textContent = text;
   }
 
-  // ── INIT ─────────────────────────────────────────────
-  function init() {
-    if (!binId) {
-      // Sem bin configurado → mostra tela de setup
-      document.getElementById('setup-section').style.display = 'block';
-      return;
-    }
-    if (!currentUser) {
-      document.getElementById('login-section').style.display = 'block';
-      return;
-    }
-    showMain();
+  function showError(msg) {
+    document.getElementById('error-section').style.display = 'block';
+    document.getElementById('error-body').innerHTML = msg;
   }
 
-  // ── SETUP ────────────────────────────────────────────
-  window.setupWithId = function() {
-    const id = document.getElementById('setup-binid').value.trim();
-    if (!id) return alert('Cole o Bin ID!');
-    binId = id;
-    localStorage.setItem('ns_binId_v2', binId);
-    document.getElementById('setup-section').style.display = 'none';
-    init();
-  }
-
-  window.createBinAuto = async function() {
-    const status = document.getElementById('setup-status');
-    status.textContent = '⏳ Criando banco de dados...';
+  // ── SUPABASE CRUD ────────────────────────────────────
+  async function loadData() {
+    syncStatus('loading', 'Sincronizando...');
     try {
-      const res = await fetch(BASE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Master-Key': API_KEY,
-          'X-Bin-Name': 'noise-space-cblol',
-          'X-Bin-Private': 'false'
-        },
-        body: JSON.stringify({ matches: [], guesses: [] })
-      });
-      const data = await res.json();
-      if (data && data.metadata && data.metadata.id) {
-        binId = data.metadata.id;
-        localStorage.setItem('ns_binId_v2', binId);
-        status.textContent = '✅ Criado! Bin ID: ' + binId;
-        setTimeout(() => {
-          document.getElementById('setup-section').style.display = 'none';
-          init();
-        }, 1200);
-      } else {
-        status.textContent = '❌ Erro: ' + JSON.stringify(data);
+      const res = await fetch(`${SUPA_URL}/rest/v1/bolao?id=eq.main&select=data`, { headers: HEADERS });
+      if (!res.ok) {
+        const err = await res.json();
+        // Tabela não existe ainda
+        if (res.status === 404 || (err.message && err.message.includes('does not exist'))) {
+          showError(`A tabela <code>bolao</code> não foi criada ainda no Supabase.<br><br>
+            Vai em <b>Supabase → SQL Editor</b> e roda:<br><br>
+            <code>CREATE TABLE bolao (id TEXT PRIMARY KEY DEFAULT 'main', data JSONB NOT NULL DEFAULT '{}'::jsonb);</code><br>
+            <code>INSERT INTO bolao (id, data) VALUES ('main', '{"matches":[],"guesses":[]}');</code>`);
+          syncStatus('err', 'Tabela não encontrada');
+          return;
+        }
+        throw new Error(JSON.stringify(err));
       }
+      const rows = await res.json();
+      if (!rows || rows.length === 0) {
+        // Linha não existe, cria
+        await fetch(`${SUPA_URL}/rest/v1/bolao`, {
+          method: 'POST',
+          headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ id: 'main', data: { matches: [], guesses: [] } })
+        });
+        state = { matches: [], guesses: [] };
+      } else {
+        state = rows[0].data || { matches: [], guesses: [] };
+        if (!state.matches) state.matches = [];
+        if (!state.guesses) state.guesses = [];
+      }
+      syncStatus('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('pt-BR'));
+      render();
     } catch(e) {
-      status.textContent = '❌ Erro de conexão: ' + e.message;
+      syncStatus('err', 'Erro de conexão');
+      console.error(e);
+      toast('Erro ao conectar com banco de dados', true);
     }
   }
 
-  window.resetBin = function() {
-    if (!confirm('Trocar o banco de dados? O Bin ID atual será esquecido.')) return;
-    localStorage.removeItem('ns_binId_v2');
-    binId = null;
-    location.reload();
+  async function saveData() {
+    if (saving) return false;
+    saving = true;
+    syncStatus('loading', 'Salvando...');
+    try {
+      const res = await fetch(`${SUPA_URL}/rest/v1/bolao?id=eq.main`, {
+        method: 'PATCH',
+        headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data: state })
+      });
+      if (!res.ok) throw new Error('Save failed ' + res.status);
+      syncStatus('ok', 'Salvo · ' + new Date().toLocaleTimeString('pt-BR'));
+      saving = false;
+      return true;
+    } catch(e) {
+      syncStatus('err', 'Erro ao salvar');
+      toast('Erro ao salvar!', true);
+      saving = false;
+      return false;
+    }
   }
+
+  // Auto refresh a cada 30s
+  setInterval(() => { if (currentUser) loadData(); }, 30000);
 
   // ── LOGIN ────────────────────────────────────────────
+  function init() {
+    if (!currentUser) {
+      document.getElementById('login-section').style.display = 'block';
+    } else {
+      showMain();
+    }
+  }
+
   window.doLogin = function() {
     const name = document.getElementById('login-name').value.trim();
     if (!name) return alert('Digite seu apelido!');
@@ -353,64 +366,8 @@
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('main-section').style.display = 'block';
     document.getElementById('user-label').textContent = currentUser;
-    document.getElementById('binid-display').textContent = binId ? binId.substring(0,8) + '...' : '-';
-    loadData(true);
+    loadData();
   }
-
-  // ── JSONBIN ──────────────────────────────────────────
-  async function loadData(showSpinner = false) {
-    if (showSpinner) syncStatus('loading', 'Sincronizando...');
-    try {
-      const res = await fetch(`${BASE}/${binId}/latest`, {
-        headers: { 'X-Master-Key': API_KEY }
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        // Bin não encontrado → volta pra setup
-        if (res.status === 404) {
-          toast('Bin ID inválido. Configure novamente.', true);
-          localStorage.removeItem('ns_binId_v2');
-          setTimeout(() => location.reload(), 2000);
-          return;
-        }
-        throw new Error(JSON.stringify(err));
-      }
-      const data = await res.json();
-      state = data.record || { matches: [], guesses: [] };
-      if (!state.matches) state.matches = [];
-      if (!state.guesses) state.guesses = [];
-      syncStatus('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('pt-BR'));
-      render();
-    } catch(e) {
-      syncStatus('err', 'Erro de conexão');
-      console.error(e);
-    }
-  }
-
-  async function saveData() {
-    if (!binId || saving) return false;
-    saving = true;
-    syncStatus('loading', 'Salvando...');
-    try {
-      const res = await fetch(`${BASE}/${binId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-        body: JSON.stringify(state)
-      });
-      if (!res.ok) throw new Error('Save failed ' + res.status);
-      syncStatus('ok', 'Salvo · ' + new Date().toLocaleTimeString('pt-BR'));
-      saving = false;
-      return true;
-    } catch(e) {
-      syncStatus('err', 'Erro ao salvar');
-      toast('Erro ao salvar!', true);
-      saving = false;
-      return false;
-    }
-  }
-
-  // Auto refresh a cada 30s
-  setInterval(() => { if (currentUser && binId) loadData(); }, 30000);
 
   // ── HELPERS ──────────────────────────────────────────
   function maxGames(fmt) { return fmt === 'MD5' ? 5 : 3; }
