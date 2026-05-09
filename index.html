@@ -21,6 +21,12 @@
     .ns-user-bar .uname { color: #1aff6e; font-weight: 600; }
     .ns-user-bar .ubtn { background: none; border: none; color: #444; font-size: 11px; font-family: 'Orbitron', monospace; cursor: pointer; padding: 2px 6px; letter-spacing: 0.1em; }
     .ns-user-bar .ubtn:hover { color: #ff4444; background: none; }
+    .ns-sync-bar { background: #0a0a0a; border-bottom: 0.5px solid #1a1a1a; padding: 5px 1.5rem; display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', monospace; font-size: 10px; color: #444; }
+    .ns-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #333; flex-shrink: 0; }
+    .ns-sync-dot.ok { background: #1aff6e; box-shadow: 0 0 6px #1aff6e88; }
+    .ns-sync-dot.err { background: #ff4444; }
+    .ns-sync-dot.loading { background: #ffa500; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
     .ns-rules { background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 0.75rem 1rem; margin: 1rem 1.5rem; display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
     .ns-rule { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #aaa; }
@@ -30,13 +36,11 @@
 
     .ns-section-title { font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; color: #444; letter-spacing: 0.28em; text-transform: uppercase; padding: 1rem 1.5rem 0.5rem; }
 
-    /* LOGIN */
     .ns-login-card { margin: 2rem 1.5rem; background: #0d0d0d; border: 0.5px solid #1aff6e33; border-radius: 12px; padding: 2.5rem 2rem; text-align: center; }
     .ns-login-title { font-family: 'Orbitron', monospace; font-size: 15px; color: #1aff6e; letter-spacing: 0.15em; margin-bottom: 0.5rem; }
     .ns-login-sub { font-size: 13px; color: #555; margin-bottom: 1.5rem; }
     .ns-login-row { display: flex; gap: 8px; max-width: 340px; margin: 0 auto; }
 
-    /* SCOREBOARD */
     .ns-scoreboard { margin: 0 1.5rem; border-radius: 10px; border: 0.5px solid #1e1e1e; overflow: hidden; }
     .ns-sb-header { background: #111; display: grid; grid-template-columns: 36px 1fr 64px 64px 64px; padding: 8px 14px; border-bottom: 0.5px solid #222; }
     .ns-sb-th { font-family: 'Orbitron', monospace; font-size: 10px; color: #444; letter-spacing: 0.15em; text-transform: uppercase; }
@@ -54,7 +58,6 @@
     .ns-pts { text-align: center; font-family: 'Orbitron', monospace; font-size: 18px; font-weight: 700; color: #1aff6e; }
     .ns-pts-sub { text-align: center; font-family: 'Orbitron', monospace; font-size: 11px; color: #444; }
 
-    /* GUESS PANEL */
     .ns-guess-panel { margin: 0 1.5rem 8px; background: #0d0d0d; border: 0.5px solid #1aff6e33; border-radius: 10px; overflow: hidden; }
     .ns-guess-panel-header { background: #0f1a12; padding: 0.7rem 1rem; border-bottom: 0.5px solid #1aff6e22; display: flex; justify-content: space-between; align-items: center; }
     .ns-guess-panel-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #1aff6e; letter-spacing: 0.15em; }
@@ -68,7 +71,6 @@
     .ns-game-col-label { font-size: 9px; color: #555; font-family: 'Orbitron', monospace; }
     .btn-save { padding: 11px 24px !important; font-size: 13px !important; width: 100%; margin-top: 2px; }
 
-    /* MATCHES */
     .ns-matches { margin: 0 1.5rem; }
     .ns-match-card { background: #0d0d0d; border: 0.5px solid #1e1e1e; border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
     .ns-match-header { background: #111; padding: 7px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid #1a1a1a; }
@@ -91,7 +93,6 @@
     .ns-dot.t2 { background: #ff4444; border-color: #ff444488; }
     .ns-dot.empty { background: #1a1a1a; }
 
-    /* ADMIN */
     .ns-admin { background: #0d0d0d; border: 0.5px solid #222; border-radius: 10px; margin: 0 1.5rem 1.25rem; overflow: hidden; }
     .ns-admin-header { background: #111; border-bottom: 0.5px solid #222; padding: 0.7rem 1rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
     .ns-admin-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #ffa500; letter-spacing: 0.15em; }
@@ -108,14 +109,14 @@
     input:focus, select:focus { border-color: #1aff6e55; }
     .ns-select-sm { width: auto !important; padding: 4px 6px; font-size: 12px; }
 
-    button { background: #1aff6e18; border: 1px solid #1aff6e44; border-radius: 6px; color: #1aff6e; font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; padding: 7px 16px; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+    button { background: #1aff6e18; border: 1px solid #1aff6e44; border-radius: 6px; color: #1aff6e; font-family: 'Orbitron', monospace; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; padding: 7px 16px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
     button:hover { background: #1aff6e30; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-danger { background: #ff3a3a18 !important; border-color: #ff3a3a44 !important; color: #ff3a3a !important; }
     .btn-danger:hover { background: #ff3a3a30 !important; }
     .btn-orange { background: #ffa50018 !important; border-color: #ffa50044 !important; color: #ffa500 !important; }
     .btn-orange:hover { background: #ffa50030 !important; }
 
-    /* PALPITES */
     .ns-palpites { margin: 0 1.5rem 8px; background: #0d0d0d; border: 0.5px solid #1e1e1e; border-radius: 10px; overflow: hidden; }
     .ns-palpites-header { background: #111; padding: 0.6rem 1rem; border-bottom: 0.5px solid #1e1e1e; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; }
     .ns-palpites-title { font-family: 'Orbitron', monospace; font-size: 11px; color: #1aff6e; letter-spacing: 0.15em; }
@@ -131,8 +132,12 @@
     .pending { background: #22222255; color: #555; border: 1px solid #2a2a2a; }
 
     .ns-empty { text-align: center; padding: 2rem; color: #333; font-size: 14px; letter-spacing: 0.1em; }
+    .ns-loading { text-align: center; padding: 2rem; color: #444; font-size: 13px; font-family: 'Orbitron', monospace; letter-spacing: 0.1em; }
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #1aff6e33; border-top-color: #1aff6e; border-radius: 50%; animation: spin 0.7s linear infinite; margin-right: 6px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .ns-toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1aff6e; color: #000; font-family: 'Orbitron', monospace; font-size: 12px; font-weight: 700; padding: 10px 22px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
     .ns-toast.show { opacity: 1; }
+    .ns-toast.err { background: #ff4444; color: #fff; }
   </style>
 </head>
 <body>
@@ -164,6 +169,11 @@
       <span>👤 <span class="uname" id="user-label"></span></span>
       <button class="ubtn" onclick="doLogout()">Trocar nome</button>
     </div>
+    <div class="ns-sync-bar">
+      <div class="ns-sync-dot loading" id="sync-dot"></div>
+      <span id="sync-text">Conectando...</span>
+      <button onclick="loadData()" style="margin-left:auto;padding:2px 8px;font-size:9px;background:none;border:1px solid #222;color:#444;letter-spacing:0.1em;">↻ Atualizar</button>
+    </div>
 
     <div class="ns-rules">
       <div class="ns-rule"><span class="ns-badge ns-badge-2">+2 pts</span> Acertou o placar exato</div>
@@ -179,16 +189,14 @@
         <div class="ns-sb-th center">Exatos</div>
         <div class="ns-sb-th center">Wins</div>
       </div>
-      <div id="scoreboard-body"><div class="ns-empty">Nenhum palpite ainda</div></div>
+      <div id="scoreboard-body"><div class="ns-loading"><span class="spinner"></span>Carregando...</div></div>
     </div>
 
     <div class="ns-section-title" style="margin-top:1.5rem;">🎯 Meus Palpites</div>
-    <div id="my-guesses-section"></div>
+    <div id="my-guesses-section"><div class="ns-loading" style="margin:0 1.5rem;background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:10px;"><span class="spinner"></span>Carregando...</div></div>
 
     <div class="ns-section-title" style="margin-top:1.5rem;">⚔️ Partidas</div>
-    <div class="ns-matches" id="matches-list">
-      <div class="ns-empty" style="background:#0d0d0d;border:0.5px solid #1e1e1e;border-radius:8px;">Nenhuma partida cadastrada</div>
-    </div>
+    <div class="ns-matches" id="matches-list"><div class="ns-loading"><span class="spinner"></span>Carregando...</div></div>
 
     <div id="all-guesses-section"></div>
 
@@ -199,7 +207,6 @@
         <span class="ns-admin-toggle" id="admin-toggle">▼ expandir</span>
       </div>
       <div class="ns-admin-body hidden" id="admin-body">
-
         <div class="ns-form-label">Nova partida</div>
         <div class="ns-form-row">
           <input id="team1" placeholder="Time 1 (ex: LOUD)" />
@@ -207,26 +214,16 @@
         </div>
         <div class="ns-flex">
           <input id="match-date" placeholder="Rodada (ex: Semana 3 - Sáb)" style="flex:1;min-width:140px;" />
-          <select id="match-format" style="width:90px;">
-            <option value="MD3">MD3</option>
-            <option value="MD5">MD5</option>
-          </select>
+          <select id="match-format" style="width:90px;"><option value="MD3">MD3</option><option value="MD5">MD5</option></select>
           <button onclick="addMatch()">+ Partida</button>
         </div>
-
         <hr class="ns-divider">
-
         <div class="ns-form-label">Resultado da partida</div>
         <div class="ns-flex">
-          <select id="result-match" style="flex:1;min-width:140px;" onchange="updateResultInputs()">
-            <option value="">Selecione a partida</option>
-          </select>
+          <select id="result-match" style="flex:1;min-width:140px;" onchange="updateResultInputs()"><option value="">Selecione a partida</option></select>
         </div>
-        <div id="result-score-area" style="margin-bottom:8px;">
-          <span style="font-size:12px;color:#555;font-family:Orbitron,monospace;letter-spacing:0.1em;">Selecione uma partida acima</span>
-        </div>
+        <div id="result-score-area" style="margin-bottom:8px;"><span style="font-size:12px;color:#555;font-family:Orbitron,monospace;">Selecione uma partida acima</span></div>
         <button class="btn-orange" onclick="setResult()">Salvar Resultado</button>
-
         <hr class="ns-divider">
         <button class="btn-danger" onclick="if(confirm('Zerar tudo? Não tem volta!')) resetAll()">Zerar tudo</button>
       </div>
@@ -234,27 +231,103 @@
 
   </div>
 </div>
-
 <div class="ns-toast" id="toast"></div>
 
 <script>
-  let state = { matches: [], guesses: [], players: {} };
+  // ── CONFIG ──────────────────────────────────────────
+  const API_KEY  = '$2a$10$eXQh7nMngM1YJIMtd6SF8uKT4zIEbtgeiZyN1dGhyGYjLJCwij0G6';
+  const BIN_NAME = 'noise-space-cblol';
+  const BASE_URL = 'https://api.jsonbin.io/v3';
+  // ─────────────────────────────────────────────────────
+
+  let binId = localStorage.getItem('ns_binId') || null;
+  let state = { matches: [], guesses: [] };
   let currentUser = null;
+  let saving = false;
 
-  try { const s = localStorage.getItem('ns_cblol_v3'); if (s) state = JSON.parse(s); } catch(e) {}
-
-  function save() { try { localStorage.setItem('ns_cblol_v3', JSON.stringify(state)); } catch(e) {} }
-  function maxGames(fmt) { return fmt === 'MD5' ? 5 : 3; }
-  function winsNeeded(fmt) { return fmt === 'MD5' ? 3 : 2; }
-
-  function toast(msg) {
+  // ── TOAST ────────────────────────────────────────────
+  function toast(msg, err = false) {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
+    t.className = 'ns-toast show' + (err ? ' err' : '');
+    setTimeout(() => t.classList.remove('show'), 2800);
   }
 
-  function doLogin() {
+  // ── SYNC STATUS ──────────────────────────────────────
+  function syncStatus(status, text) {
+    const d = document.getElementById('sync-dot');
+    const s = document.getElementById('sync-text');
+    d.className = 'ns-sync-dot ' + status;
+    s.textContent = text;
+  }
+
+  // ── JSONBIN API ──────────────────────────────────────
+  async function createBin() {
+    syncStatus('loading', 'Criando banco de dados...');
+    const res = await fetch(`${BASE_URL}/b`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY, 'X-Bin-Name': BIN_NAME, 'X-Bin-Private': 'false' },
+      body: JSON.stringify({ matches: [], guesses: [] })
+    });
+    const data = await res.json();
+    if (data.metadata && data.metadata.id) {
+      binId = data.metadata.id;
+      localStorage.setItem('ns_binId', binId);
+      syncStatus('ok', 'Conectado · ' + new Date().toLocaleTimeString('pt-BR'));
+      return true;
+    }
+    syncStatus('err', 'Erro ao criar banco');
+    return false;
+  }
+
+  async function loadData() {
+    syncStatus('loading', 'Sincronizando...');
+    try {
+      if (!binId) {
+        // Tenta encontrar bin existente pelo nome
+        const listRes = await fetch(`${BASE_URL}/b?page=1&count=20`, { headers: { 'X-Master-Key': API_KEY } });
+        const listData = await listRes.json();
+        if (listData.result) {
+          const found = listData.result.find(b => b.record && b.record.name === BIN_NAME || b.metadata && b.metadata.name === BIN_NAME);
+          if (found) { binId = found.metadata ? found.metadata.id : found.id; localStorage.setItem('ns_binId', binId); }
+        }
+        if (!binId) { await createBin(); render(); return; }
+      }
+      const res = await fetch(`${BASE_URL}/b/${binId}/latest`, { headers: { 'X-Master-Key': API_KEY } });
+      if (!res.ok) { binId = null; localStorage.removeItem('ns_binId'); await loadData(); return; }
+      const data = await res.json();
+      state = data.record || { matches: [], guesses: [] };
+      if (!state.matches) state.matches = [];
+      if (!state.guesses) state.guesses = [];
+      syncStatus('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('pt-BR'));
+      render();
+    } catch(e) {
+      syncStatus('err', 'Erro de conexão');
+      console.error(e);
+    }
+  }
+
+  async function saveData() {
+    if (!binId || saving) return;
+    saving = true;
+    syncStatus('loading', 'Salvando...');
+    try {
+      const res = await fetch(`${BASE_URL}/b/${binId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+        body: JSON.stringify(state)
+      });
+      if (!res.ok) throw new Error('Save failed');
+      syncStatus('ok', 'Salvo · ' + new Date().toLocaleTimeString('pt-BR'));
+    } catch(e) {
+      syncStatus('err', 'Erro ao salvar');
+      toast('Erro ao salvar dados!', true);
+    }
+    saving = false;
+  }
+
+  // ── LOGIN ────────────────────────────────────────────
+  window.doLogin = function() {
     const name = document.getElementById('login-name').value.trim();
     if (!name) return alert('Digite seu apelido!');
     currentUser = name;
@@ -262,10 +335,10 @@
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('main-section').style.display = 'block';
     document.getElementById('user-label').textContent = name;
-    render();
+    loadData();
   }
 
-  function doLogout() {
+  window.doLogout = function() {
     currentUser = null;
     localStorage.removeItem('ns_user');
     document.getElementById('login-section').style.display = 'block';
@@ -279,7 +352,15 @@
     document.getElementById('login-section').style.display = 'none';
     document.getElementById('main-section').style.display = 'block';
     document.getElementById('user-label').textContent = savedUser;
+    loadData();
   }
+
+  // ── AUTO REFRESH a cada 30s ──────────────────────────
+  setInterval(() => { if (currentUser) loadData(); }, 30000);
+
+  // ── HELPERS ──────────────────────────────────────────
+  function maxGames(fmt) { return fmt === 'MD5' ? 5 : 3; }
+  function winsNeeded(fmt) { return fmt === 'MD5' ? 3 : 2; }
 
   function getWinner(games, fmt) {
     const need = winsNeeded(fmt);
@@ -301,21 +382,22 @@
   }
 
   function calcScores() {
-    state.players = {};
+    const players = {};
     for (const g of state.guesses) {
-      if (!state.players[g.player]) state.players[g.player] = { pts: 0, exact: 0, wins: 0 };
+      if (!players[g.player]) players[g.player] = { pts: 0, exact: 0, wins: 0 };
       const m = state.matches.find(x => x.id === g.matchId);
       if (!m) continue;
       const pts = getPoints(g, m);
       if (pts < 0) continue;
-      state.players[g.player].pts += pts;
-      if (pts === 2) state.players[g.player].exact++;
-      if (pts >= 1) state.players[g.player].wins++;
+      players[g.player].pts += pts;
+      if (pts === 2) players[g.player].exact++;
+      if (pts >= 1) players[g.player].wins++;
     }
-    save();
+    return players;
   }
 
-  window.saveMyGuesses = function() {
+  // ── SALVAR PALPITES ───────────────────────────────────
+  window.saveMyGuesses = async function() {
     let saved = 0;
     for (const m of state.matches) {
       if (getWinner(m.games || [], m.format || 'MD3')) continue;
@@ -333,24 +415,32 @@
       else state.guesses.push({ id: Date.now() + Math.random(), player: currentUser, matchId: m.id, games });
       saved++;
     }
-    calcScores(); render();
-    toast(saved > 0 ? `✅ ${saved} palpite(s) salvo(s)!` : 'Nenhum palpite preenchido.');
+    if (saved > 0) {
+      await saveData();
+      toast(`✅ ${saved} palpite(s) salvo(s)!`);
+      render();
+    } else {
+      toast('Nenhum palpite preenchido.');
+    }
   }
 
+  // ── ADMIN ─────────────────────────────────────────────
   window.toggleAdmin = function() {
     const b = document.getElementById('admin-body'), t = document.getElementById('admin-toggle');
     if (b.classList.contains('hidden')) { b.classList.remove('hidden'); t.textContent = '▲ recolher'; }
     else { b.classList.add('hidden'); t.textContent = '▼ expandir'; }
   }
 
-  window.addMatch = function() {
+  window.addMatch = async function() {
     const t1 = document.getElementById('team1').value.trim();
     const t2 = document.getElementById('team2').value.trim();
     const date = document.getElementById('match-date').value.trim();
     const fmt = document.getElementById('match-format').value;
     if (!t1 || !t2) return alert('Preencha os dois times!');
     state.matches.push({ id: 'm_' + Date.now(), t1, t2, date, format: fmt, games: [] });
-    save(); render(); toast('Partida adicionada!');
+    await saveData();
+    toast('Partida adicionada!');
+    render();
     document.getElementById('team1').value = '';
     document.getElementById('team2').value = '';
     document.getElementById('match-date').value = '';
@@ -378,7 +468,7 @@
     area.innerHTML = html + '</div>';
   }
 
-  window.setResult = function() {
+  window.setResult = async function() {
     const mid = document.getElementById('result-match').value;
     if (!mid) return alert('Selecione a partida!');
     const m = state.matches.find(x => x.id === mid);
@@ -390,20 +480,26 @@
       games.push(sel && sel.value ? { w: sel.value } : null);
     }
     m.games = games;
-    calcScores(); render(); toast('Resultado salvo!');
+    await saveData();
+    toast('Resultado salvo!');
+    render();
   }
 
-  window.resetAll = function() {
-    state = { matches: [], guesses: [], players: {} };
-    save(); render(); toast('Dados zerados!');
+  window.resetAll = async function() {
+    state = { matches: [], guesses: [] };
+    await saveData();
+    toast('Dados zerados!');
+    render();
   }
 
+  // ── RENDER ────────────────────────────────────────────
   function render() {
+    const scores = calcScores();
     updateResultSelect();
-    renderScoreboard();
+    renderScoreboard(scores);
     renderMyGuesses();
     renderMatches();
-    renderAllGuesses();
+    renderAllGuesses(scores);
   }
 
   function updateResultSelect() {
@@ -411,9 +507,9 @@
     document.getElementById('result-match').innerHTML = '<option value="">Selecione a partida</option>' + opts;
   }
 
-  function renderScoreboard() {
-    const players = Object.entries(state.players).sort((a, b) => b[1].pts - a[1].pts);
-    if (!players.length) { document.getElementById('scoreboard-body').innerHTML = '<div class="ns-empty">Nenhum palpite registrado ainda</div>'; return; }
+  function renderScoreboard(scores) {
+    const players = Object.entries(scores).sort((a, b) => b[1].pts - a[1].pts);
+    if (!players.length) { document.getElementById('scoreboard-body').innerHTML = '<div class="ns-empty">Nenhum palpite ainda</div>'; return; }
     let html = '';
     players.forEach(([name, p], i) => {
       const rc = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
@@ -456,15 +552,13 @@
         </div>
         <div class="ns-guess-inputs">`;
       for (let i = 0; i < max; i++) {
-        const saved = myGames[i];
-        html += `<div class="ns-game-col">
-          <span class="ns-game-col-label">J${i+1}</span>
+        const sv = myGames[i];
+        html += `<div class="ns-game-col"><span class="ns-game-col-label">J${i+1}</span>
           <select class="ns-select-sm" id="my-pg-${m.id}-${i}" style="width:76px;font-size:12px;">
             <option value="">-</option>
-            <option value="t1" ${saved&&saved.w==='t1'?'selected':''}>${t1}</option>
-            <option value="t2" ${saved&&saved.w==='t2'?'selected':''}>${t2}</option>
-          </select>
-        </div>`;
+            <option value="t1" ${sv&&sv.w==='t1'?'selected':''}>${t1}</option>
+            <option value="t2" ${sv&&sv.w==='t2'?'selected':''}>${t2}</option>
+          </select></div>`;
       }
       html += `</div></div>`;
     }
@@ -519,7 +613,7 @@
     el.innerHTML = html;
   }
 
-  function renderAllGuesses() {
+  function renderAllGuesses(scores) {
     const sec = document.getElementById('all-guesses-section');
     if (!state.matches.length) { sec.innerHTML = ''; return; }
     let html = '<div class="ns-section-title" style="margin-top:1.5rem;">📋 Todos os Palpites</div>';
@@ -540,10 +634,10 @@
         <div class="ns-palpites-body">`;
       for (const g of mGuesses) {
         const pts = getPoints(g, m);
-        const resClass = pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : pts === 0 ? 'pts-0' : 'pending';
-        const resLabel = pts === 2 ? '+2' : pts === 1 ? '+1' : pts === 0 ? '0' : '?';
-        const gResult = getWinner(g.games || [], fmt);
-        const scoreStr = gResult ? `${gResult.s1}:${gResult.s2}` : '?:?';
+        const resClass = pts===2?'pts-2':pts===1?'pts-1':pts===0?'pts-0':'pending';
+        const resLabel = pts===2?'+2':pts===1?'+1':pts===0?'0':'?';
+        const gResult = getWinner(g.games||[], fmt);
+        const scoreStr = gResult?`${gResult.s1}:${gResult.s2}`:'?:?';
         const isMe = g.player === currentUser;
         html += `<div class="ns-pal-row">
           <div class="ns-pal-player">${g.player}${isMe?' <span style="font-size:10px;color:#1aff6e55;">(você)</span>':''}</div>
@@ -556,9 +650,6 @@
     if (!hasAny) sec.innerHTML = '';
     else sec.innerHTML = html;
   }
-
-  calcScores();
-  if (currentUser) render();
 </script>
 </body>
 </html>
